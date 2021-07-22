@@ -127,6 +127,30 @@ class BacklogIntegrationTest {
         assertThat(storyResponseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
+    @Test
+    void testDelete() {
+        Story storyCreated = createStory(
+                new Story(
+                        22L,
+                        LocalDate.of(2019,11,28),
+                        "new story"
+                )
+        );
+
+        ResponseEntity<Void> responseEntity =
+                restTemplate.exchange(RequestEntity
+                        .delete(URI.create("/backlog/" + storyCreated.getId()))
+                        .build(),Void.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        ResponseEntity<Story> storyResponseEntity =
+                restTemplate.getForEntity("/backlog/" + storyCreated.getId(),
+                        Story.class);
+
+        assertThat(storyResponseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
     private Story createStory(Story storyToCreate) {
         return restTemplate
                 .postForEntity("/backlog", storyToCreate, Story.class)

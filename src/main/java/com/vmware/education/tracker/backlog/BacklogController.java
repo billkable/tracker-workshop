@@ -45,4 +45,10 @@ class BacklogController {
             return notFound().build();
         }
     }
+
+    @DeleteMapping("{id}")
+    ResponseEntity<Void> delete(@PathVariable long id) {
+        repository.deleteById(id);
+        return noContent().build();
+    }
 }

@@ -1,6 +1,5 @@
 package com.vmware.education.tracker.backlog;
 
-import com.vmware.education.tracker.timesheets.;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -85,4 +84,37 @@ class BacklogControllerTest {
 
         assertThat(storyResponseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
+
+    @Test
+    void testUpdate() {
+        Story storyToUpdate =
+                new Story(2L,
+                        LocalDate.of(2019,11,28),
+                        "story to update");
+
+        Story storySaved =
+                new Story(1L,
+                        2L,
+                        LocalDate.of(2019,11,28),
+                        "story to update");
+
+        doReturn(storySaved)
+                .when(repository)
+                .save(new Story(1L,
+                        storyToUpdate.getProjectId(),
+                        storyToUpdate.getCreateDate(),
+                        storyToUpdate.getTitle()));
+
+        ResponseEntity<Story> storyResponseEntity =
+                controller.update(1L, storyToUpdate);
+
+        verify(repository)
+                .save(new Story(1L,
+                        storyToUpdate.getProjectId(),
+                        storyToUpdate.getCreateDate(),
+                        storyToUpdate.getTitle()));
+
+        assertThat(storyResponseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+    }
+
 }

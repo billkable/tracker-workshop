@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 
+import java.net.URI;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,6 +64,48 @@ class BacklogIntegrationTest {
                         Story.class);
 
         assertThat(storyResponseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void testUpdate() {
+        Story storyCreated = createStory(
+                new Story(
+                        22L,
+                        LocalDate.of(2019,11,28),
+                        "new story"
+                )
+        );
+
+        Story storyToUpdate =
+                new Story(
+                        22L,
+                        LocalDate.of(2019,11,28),
+                        "story to update"
+                );
+
+        RequestEntity<Story> requestEntity = RequestEntity
+                .put(URI.create("/backlog/" + storyCreated.getId()))
+                .body(storyToUpdate);
+
+        ResponseEntity<Void> storyResponseEntity =
+                restTemplate.exchange(requestEntity,Void.class);
+
+        assertThat(storyResponseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        ResponseEntity<Story> storyResponseEntityFound =
+                restTemplate.getForEntity("/backlog/" + storyCreated.getId(),
+                        Story.class);
+
+
+        assertThat(storyResponseEntityFound.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(storyResponseEntityFound.getBody()).isNotNull();
+
+        Story storyFound = storyResponseEntityFound.getBody();
+
+        assertThat(storyFound.getId()).isEqualTo(storyCreated.getId());
+        assertThat(storyFound.getProjectId()).isEqualTo(storyToUpdate.getProjectId());
+        assertThat(storyFound.getCreateDate()).isEqualTo(storyToUpdate.getCreateDate());
+        assertThat(storyFound.getTitle()).isEqualTo(storyToUpdate.getTitle());
     }
 
     private Story createStory(Story storyToCreate) {

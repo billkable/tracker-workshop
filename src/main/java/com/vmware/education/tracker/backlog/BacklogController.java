@@ -30,4 +30,15 @@ class BacklogController {
                 notFound().build():
                 ok(storyFound.get());
     }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Story> update(@PathVariable long id,
+                                        @RequestBody Story storyToUpdate) {
+        repository.save(new Story(id,
+                storyToUpdate.getProjectId(),
+                storyToUpdate.getCreateDate(),
+                storyToUpdate.getTitle()));
+
+        return noContent().build();
+    }
 }

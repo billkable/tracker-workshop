@@ -335,13 +335,9 @@ environment:
 
     `git push origin main`
 
-<<<<<<< HEAD
 1.  Watch the pipeline,
     it should succeed.
     If it does not,
     debug and resolve.
     If you cannot debug and resolve,
     roll back your changes.
-=======
-### Add delete story feature
->>>>>>> 343cb12 (introduce package level visibility for timesheets functionality)

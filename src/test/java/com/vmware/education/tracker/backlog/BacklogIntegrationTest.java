@@ -37,4 +37,27 @@ class BacklogIntegrationTest {
         assertThat(storySaved.getTitle()).isEqualTo(storyToCreate.getTitle());
     }
 
+    @Test
+    void testFind() {
+        Story storyCreated = createStory(
+                new Story(
+                        22L,
+                        LocalDate.of(2019,11,28),
+                        "new story"
+                )
+        );
+
+        ResponseEntity<Story> storyResponseEntity =
+                restTemplate.getForEntity("/backlog/" + storyCreated.getId(),
+                        Story.class);
+
+        assertThat(storyResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(storyResponseEntity.getBody()).isEqualTo(storyCreated);
+    }
+
+    private Story createStory(Story storyToCreate) {
+        return restTemplate
+                .postForEntity("/backlog", storyToCreate, Story.class)
+                .getBody();
+    }
 }

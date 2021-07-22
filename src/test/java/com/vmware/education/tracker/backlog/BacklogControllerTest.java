@@ -92,11 +92,21 @@ class BacklogControllerTest {
                         LocalDate.of(2019,11,28),
                         "story to update");
 
+        Story storyFound =
+                new Story(1L,
+                        2L,
+                        LocalDate.of(2019,11,28),
+                        "existing story");
+
         Story storySaved =
                 new Story(1L,
                         2L,
                         LocalDate.of(2019,11,28),
                         "story to update");
+
+        doReturn(Optional.of(storyFound))
+                .when(repository)
+                .findById(1L);
 
         doReturn(storySaved)
                 .when(repository)
@@ -105,8 +115,11 @@ class BacklogControllerTest {
                         storyToUpdate.getCreateDate(),
                         storyToUpdate.getTitle()));
 
-        ResponseEntity<Story> storyResponseEntity =
+        ResponseEntity<Void> storyResponseEntity =
                 controller.update(1L, storyToUpdate);
+
+        verify(repository)
+                .findById(1L);
 
         verify(repository)
                 .save(new Story(1L,
@@ -117,4 +130,25 @@ class BacklogControllerTest {
         assertThat(storyResponseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 
+    @Test
+    void testUpdate_notFound() {
+        Story storyToSave =
+                new Story(
+                        2L,
+                        LocalDate.of(2019,11,28),
+                        "story to update"
+                );
+
+        doReturn(Optional.empty())
+                .when(repository)
+                .findById(0L);
+
+        ResponseEntity<Void> storyResponseEntity =
+                controller.update(0L,storyToSave);
+
+        verify(repository)
+                .findById(0L);
+
+        assertThat(storyResponseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
 }

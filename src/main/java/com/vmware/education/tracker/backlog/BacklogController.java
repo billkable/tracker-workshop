@@ -32,13 +32,17 @@ class BacklogController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Story> update(@PathVariable long id,
+    ResponseEntity<Void> update(@PathVariable long id,
                                         @RequestBody Story storyToUpdate) {
-        repository.save(new Story(id,
-                storyToUpdate.getProjectId(),
-                storyToUpdate.getCreateDate(),
-                storyToUpdate.getTitle()));
+        if (repository.findById(id).isPresent()) {
+            repository.save(new Story(id,
+                    storyToUpdate.getProjectId(),
+                    storyToUpdate.getCreateDate(),
+                    storyToUpdate.getTitle()));
 
-        return noContent().build();
+            return noContent().build();
+        } else {
+            return notFound().build();
+        }
     }
 }

@@ -3,8 +3,9 @@ package com.vmware.education.tracker.backlog;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.http.ResponseEntity.created;
-import static org.springframework.http.ResponseEntity.ok;
+import java.util.Optional;
+
+import static org.springframework.http.ResponseEntity.*;
 
 @RestController
 @RequestMapping("/backlog")
@@ -23,6 +24,10 @@ class BacklogController {
 
     @GetMapping("{id}")
     ResponseEntity<Story> findById(@PathVariable long id) {
-        return ok(repository.findById(id).get());
+        Optional<Story> storyFound = repository.findById(id);
+
+        return storyFound.isEmpty()?
+                notFound().build():
+                ok(storyFound.get());
     }
 }

@@ -1,5 +1,6 @@
 package com.vmware.education.tracker.backlog;
 
+import com.vmware.education.tracker.timesheets.;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -68,5 +69,20 @@ class BacklogControllerTest {
 
         assertThat(storyResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(storyResponseEntity.getBody()).isEqualTo(storyFound);
+    }
+
+    @Test
+    void testFind_notFound() {
+        doReturn(Optional.empty())
+                .when(repository)
+                .findById(1L);
+
+        ResponseEntity<Story> storyResponseEntity =
+                controller.findById(1L);
+
+        verify(repository)
+                .findById(1L);
+
+        assertThat(storyResponseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 }

@@ -55,6 +55,15 @@ class BacklogIntegrationTest {
         assertThat(storyResponseEntity.getBody()).isEqualTo(storyCreated);
     }
 
+    @Test
+    void testFind_notFound() {
+        ResponseEntity<Story> storyResponseEntity =
+                restTemplate.getForEntity("/backlog/0",
+                        Story.class);
+
+        assertThat(storyResponseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
     private Story createStory(Story storyToCreate) {
         return restTemplate
                 .postForEntity("/backlog", storyToCreate, Story.class)
